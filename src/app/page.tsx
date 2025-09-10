@@ -48,7 +48,7 @@ export default function Home() {
         </div>
 
         {/* Bedrock Test Panel */}
-        <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-6">
+        <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-6" data-test="bedrock-test-panel">
           <h2 className="text-lg font-semibold mb-4">🤖 Bedrock LLM Test</h2>
 
           {/* Quick Generate Button */}
