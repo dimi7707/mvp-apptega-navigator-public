@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true
   },
+  assetPrefix: 'https://apptega-navigator.netlify.app',
   
   // Elimina assetPrefix y basePath si no los necesitas
   // assetPrefix: process.env.NODE_ENV === 'production' ? '/navigator' : '',

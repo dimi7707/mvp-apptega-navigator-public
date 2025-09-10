@@ -4,7 +4,7 @@
   class ApptegarNavigator {
     constructor() {
       this.config = {
-        baseUrl: 'https://navigator.apptega.com/',
+        baseUrl: 'https://apptega-navigator.netlify.app/',
         width: '400',
         height: '600',
         position: 'right',
