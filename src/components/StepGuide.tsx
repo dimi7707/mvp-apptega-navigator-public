@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { OnboardingStep } from '@/utils/stepData';
 import { UserContext, getContextualHelp } from '@/utils/integrationHelpers';
 
@@ -15,6 +15,7 @@ const StepGuide: React.FC<StepGuideProps> = ({
   onComplete, 
   onAction 
 }) => {
+  const [expandedActions, setExpandedActions] = useState<number[]>([]);
   const contextualHelp = context?.currentPage ? 
     getContextualHelp(context.currentPage, step) : null;
 
@@ -24,6 +25,14 @@ const StepGuide: React.FC<StepGuideProps> = ({
     } else if (action.action) {
       onAction(action.action);
     }
+  };
+
+  const toggleAction = (index: number) => {
+    setExpandedActions(prev => 
+      prev.includes(index) 
+        ? prev.filter(i => i !== index)
+        : [...prev, index]
+    );
   };
 
   const handleCompleteStep = () => {
@@ -60,26 +69,52 @@ const StepGuide: React.FC<StepGuideProps> = ({
         </div>
       )}
 
-      {/* Action buttons */}
+      {/* Action buttons with collapsible content */}
       <div className="space-y-2 mb-4">
-        {step.actions.map((action, index) => (
-          <button
-            key={index}
-            onClick={() => handleAction(action)}
-            className={`w-full text-left px-4 py-3 rounded-lg border transition-colors duration-200 ${
-              index === 0
-                ? 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700'
-                : 'bg-white text-blue-600 border-blue-600 hover:bg-blue-50'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <span className="font-medium">{action.label}</span>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
+        {step.actions.map((action, index) => {
+          const isExpanded = expandedActions.includes(index);
+          return (
+            <div key={index} className="border border-gray-200 rounded-lg overflow-hidden">
+              <button
+                onClick={() => toggleAction(index)}
+                className={`w-full text-left px-4 py-3 transition-colors duration-200 ${
+                  index === 0
+                    ? 'bg-blue-600 text-white hover:bg-blue-700'
+                    : 'bg-white text-blue-600 hover:bg-blue-50'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-medium">{action.label}</span>
+                  <svg 
+                    className={`w-4 h-4 transition-transform duration-200 ${
+                      isExpanded ? 'rotate-45' : 'rotate-0'
+                    }`} 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                </div>
+              </button>
+              {isExpanded && (
+                <div className="px-4 py-3 bg-gray-50 border-t border-gray-200">
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.
+                  </p>
+                  {action.target && (
+                    <button
+                      onClick={() => handleAction(action)}
+                      className="mt-3 text-xs text-blue-600 hover:text-blue-800 font-medium underline"
+                    >
+                      Ir a {action.target}
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
-          </button>
-        ))}
+          );
+        })}
       </div>
 
       {/* Tips section */}
