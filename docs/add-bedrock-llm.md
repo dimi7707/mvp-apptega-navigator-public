@@ -24,10 +24,10 @@ npm install @aws-sdk/client-bedrock-runtime
 Create `.env.local`:
 
 ```bash
-AWS_REGION=us-east-1
-AWS_ACCESS_KEY_ID=your_key_here
-AWS_SECRET_ACCESS_KEY=your_secret_here
-BEDROCK_MODEL_ID=amazon.titan-text-express-v1
+NAVIGATOR_AWS_REGION=us-east-1
+NAVIGATOR_AWS_ACCESS_KEY_ID=your_key_here
+NAVIGATOR_AWS_SECRET_ACCESS_KEY=your_secret_here
+NAVIGATOR_BEDROCK_MODEL_ID=amazon.titan-text-express-v1
 ```
 
 ## Step 3: Basic Bedrock Service
@@ -41,17 +41,17 @@ import {
 } from "@aws-sdk/client-bedrock-runtime";
 
 const client = new BedrockRuntimeClient({
-  region: process.env.AWS_REGION || "us-east-1",
+  region: process.env.NAVIGATOR_AWS_REGION || "us-east-1",
   credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+    accessKeyId: process.env.NAVIGATOR_AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.NAVIGATOR_AWS_SECRET_ACCESS_KEY!,
   },
 });
 
 export async function generateText(prompt: string): Promise<string> {
   try {
     const command = new InvokeModelCommand({
-      modelId: process.env.BEDROCK_MODEL_ID || "amazon.titan-text-express-v1",
+      modelId: process.env.NAVIGATOR_BEDROCK_MODEL_ID || "amazon.titan-text-express-v1",
       contentType: "application/json",
       accept: "application/json",
       body: JSON.stringify({
@@ -171,7 +171,7 @@ That's it! You now have basic Bedrock integration. Once this works, we can itera
 
 ## Quick Troubleshooting
 
-- **"Access Denied"**: Check your AWS credentials in `.env.local`
+- **"Access Denied"**: Check your AWS credentials with NAVIGATOR_ prefix in `.env.local`
 - **"Model Not Found"**: Verify model ID matches what's enabled in your AWS account
 - **Empty Response**: Check AWS region matches your Bedrock setup
 
