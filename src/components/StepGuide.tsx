@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { OnboardingStep } from '@/utils/stepData';
 import { UserContext, getContextualHelp } from '@/utils/integrationHelpers';
 
@@ -15,6 +15,7 @@ const StepGuide: React.FC<StepGuideProps> = ({
   onComplete, 
   onAction 
 }) => {
+  const [expandedActions, setExpandedActions] = useState<{ [key: number]: boolean }>({});
   const contextualHelp = context?.currentPage ? 
     getContextualHelp(context.currentPage, step) : null;
 
@@ -28,6 +29,40 @@ const StepGuide: React.FC<StepGuideProps> = ({
 
   const handleCompleteStep = () => {
     onComplete(step.id);
+  };
+
+  const toggleActionExpansion = (index: number) => {
+    setExpandedActions(prev => ({
+      ...prev,
+      [index]: !prev[index]
+    }));
+  };
+
+  const getDummyContent = (actionLabel: string) => {
+    if (actionLabel === 'View Dashboard') {
+      return {
+        title: 'Dashboard Overview',
+        items: [
+          'Compliance Score: 78%',
+          'Active Tasks: 12',
+          'Overdue Items: 3',
+          'Recent Activity: 5 updates',
+          'Next Audit: March 2024'
+        ]
+      };
+    } else if (actionLabel === 'Generate Reports') {
+      return {
+        title: 'Available Reports',
+        items: [
+          'Compliance Status Report',
+          'Risk Assessment Summary',
+          'Task Progress Report',
+          'Audit Readiness Report',
+          'Executive Dashboard'
+        ]
+      };
+    }
+    return null;
   };
 
   return (
@@ -62,24 +97,67 @@ const StepGuide: React.FC<StepGuideProps> = ({
 
       {/* Action buttons */}
       <div className="space-y-2 mb-4">
-        {step.actions.map((action, index) => (
-          <button
-            key={index}
-            onClick={() => handleAction(action)}
-            className={`w-full text-left px-4 py-3 rounded-lg border transition-colors duration-200 ${
-              index === 0
-                ? 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700'
-                : 'bg-white text-blue-600 border-blue-600 hover:bg-blue-50'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <span className="font-medium">{action.label}</span>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
+        {step.actions.map((action, index) => {
+          const dummyContent = getDummyContent(action.label);
+          const isExpanded = expandedActions[index];
+          const hasExpandableContent = dummyContent !== null;
+          
+          return (
+            <div key={index} className="w-full">
+              <button
+                onClick={() => hasExpandableContent ? toggleActionExpansion(index) : handleAction(action)}
+                className={`w-full text-left px-4 py-3 rounded-lg border transition-colors duration-200 ${
+                  index === 0
+                    ? 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700'
+                    : 'bg-white text-blue-600 border-blue-600 hover:bg-blue-50'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-medium">{action.label}</span>
+                  <div className="flex items-center space-x-2">
+                    {hasExpandableContent ? (
+                      <svg 
+                        className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-45' : ''}`} 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                    ) : (
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    )}
+                  </div>
+                </div>
+              </button>
+              
+              {/* Collapsible content */}
+              {hasExpandableContent && isExpanded && dummyContent && (
+                <div className="mt-2 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <h4 className="text-sm font-semibold text-gray-900 mb-3">{dummyContent.title}</h4>
+                  <ul className="space-y-2">
+                    {dummyContent.items.map((item, itemIndex) => (
+                      <li key={itemIndex} className="flex items-center text-sm text-gray-700">
+                        <div className="w-2 h-2 bg-blue-400 rounded-full mr-3"></div>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-3 pt-3 border-t border-gray-300">
+                    <button
+                      onClick={() => handleAction(action)}
+                      className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                    >
+                      Go to {action.label} →
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
-          </button>
-        ))}
+          );
+        })}
       </div>
 
       {/* Tips section */}
