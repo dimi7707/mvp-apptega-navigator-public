@@ -8,22 +8,40 @@ import {
   UserContext, 
   isStepAvailable 
 } from '@/utils/integrationHelpers';
+import {
+  getCompletedSteps,
+  addCompletedStep,
+  getCurrentStepIndex,
+  saveCurrentStepIndex
+} from '@/utils/storageHelpers';
 
 const NavigatorWidget: React.FC = () => {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [userContext, setUserContext] = useState<UserContext | null>(null);
   const [completedSteps, setCompletedSteps] = useState<string[]>([]);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
   
   const integration = AppregaIntegration.getInstance();
   const currentStep = onboardingSteps[currentStepIndex];
 
+  // Hydration effect - load localStorage data after client hydration
   useEffect(() => {
+    setIsHydrated(true);
+    setCurrentStepIndex(getCurrentStepIndex());
+    setCompletedSteps(getCompletedSteps());
+  }, []);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+
     // Set up context listener
     integration.onContextUpdate((context: UserContext) => {
       setUserContext(context);
+      // Merge context completed steps with localStorage
       if (context.completedSteps) {
-        setCompletedSteps(context.completedSteps);
+        const mergedSteps = [...new Set([...completedSteps, ...context.completedSteps])];
+        setCompletedSteps(mergedSteps);
       }
     });
 
@@ -37,29 +55,31 @@ const NavigatorWidget: React.FC = () => {
           step => step.id === completedSteps[completedSteps.length - 1]
         );
         if (lastCompletedIndex >= 0 && lastCompletedIndex + 1 < onboardingSteps.length) {
-          setCurrentStepIndex(lastCompletedIndex + 1);
+          const newIndex = lastCompletedIndex + 1;
+          setCurrentStepIndex(newIndex);
+          saveCurrentStepIndex(newIndex);
         }
       }
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [completedSteps, integration]);
+  }, [completedSteps, integration, isHydrated]);
 
   const handleStepComplete = (stepId: string) => {
-    const newCompletedSteps = [...completedSteps];
-    if (!newCompletedSteps.includes(stepId)) {
-      newCompletedSteps.push(stepId);
-      setCompletedSteps(newCompletedSteps);
-    }
+    // Update localStorage and state
+    const updatedSteps = addCompletedStep(stepId);
+    setCompletedSteps(updatedSteps);
     
+    // Notify parent application
     integration.completeStep(stepId);
     
     // Move to next step if available
     const nextStep = getNextStep(stepId);
     if (nextStep) {
       const nextIndex = onboardingSteps.findIndex(step => step.id === nextStep.id);
-      if (nextIndex >= 0 && isStepAvailable(nextStep.id, newCompletedSteps, nextStep)) {
+      if (nextIndex >= 0 && isStepAvailable(nextStep.id, updatedSteps, nextStep)) {
         setCurrentStepIndex(nextIndex);
+        saveCurrentStepIndex(nextIndex);
       }
     }
   };
@@ -84,13 +104,17 @@ const NavigatorWidget: React.FC = () => {
 
   const handlePreviousStep = () => {
     if (currentStepIndex > 0) {
-      setCurrentStepIndex(currentStepIndex - 1);
+      const newIndex = currentStepIndex - 1;
+      setCurrentStepIndex(newIndex);
+      saveCurrentStepIndex(newIndex);
     }
   };
 
   const handleNextStep = () => {
     if (currentStepIndex < onboardingSteps.length - 1) {
-      setCurrentStepIndex(currentStepIndex + 1);
+      const newIndex = currentStepIndex + 1;
+      setCurrentStepIndex(newIndex);
+      saveCurrentStepIndex(newIndex);
     }
   };
 
