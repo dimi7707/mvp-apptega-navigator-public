@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apptega Navigator Widget - Integration Examples</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .example {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .example h2 {
+            color: #333;
+            margin-top: 0;
+        }
+        .example p {
+            color: #666;
+            line-height: 1.6;
+        }
+        .main-content {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            margin-right: 420px;
+            min-height: 400px;
+        }
+        .main-content h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .sidebar {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 400px;
+            height: calc(100vh - 40px);
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 8px;
+        }
+        .code {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main-content">
+            <h1>🧭 Apptega Navigator Widget</h1>
+            <p>This is a demo page showing how the Apptega Navigator Widget integrates with your application. The widget is displayed in the sidebar on the right.</p>
+            
+            <div class="example">
+                <h2>Method 1: Direct Iframe Integration</h2>
+                <p>The simplest way to integrate the navigator widget is using a direct iframe embed:</p>
+                <div class="code">
+&lt;iframe 
+  src="http://localhost:3000/" 
+  width="400" 
+  height="600" 
+  frameborder="0"
+  id="apptega-navigator"&gt;
+&lt;/iframe&gt;
+                </div>
+                <p>This method is used in the sidebar on the right side of this page.</p>
+            </div>
+
+            <div class="example">
+                <h2>Method 2: Script-based Integration</h2>
+                <p>For more advanced integration with communication between the widget and your app:</p>
+                <div class="code">
+&lt;div id="apptega-navigator-container"&gt;&lt;/div&gt;
+&lt;script src="http://localhost:3000/embed.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  AppregaNavigator.init({
+    container: '#apptega-navigator-container',
+    userRole: 'organization',
+    organizationId: 'org_123',
+    userId: 'user_456',
+    onNavigate: function(path) {
+      console.log('Navigate to:', path);
+      // Handle navigation in your app
+    },
+    onStartTour: function() {
+      console.log('Start application tour');
+      // Start your app's tour functionality  
+    }
+  });
+&lt;/script&gt;
+                </div>
+                <button class="button" onclick="testScriptIntegration()">Test Script Integration</button>
+                <button class="button" onclick="showNavigator()">Show Navigator</button>
+                <button class="button" onclick="hideNavigator()">Hide Navigator</button>
+            </div>
+
+            <div class="example">
+                <h2>Method 3: Auto-initialization with Data Attributes</h2>
+                <p>The easiest way to embed the widget with configuration via HTML attributes:</p>
+                <div class="code">
+&lt;div data-apptega-navigator
+     data-width="400"
+     data-height="600"
+     data-user-id="user_123"
+     data-organization-id="org_456"
+     data-theme="light"&gt;
+&lt;/div&gt;
+&lt;script src="http://localhost:3000/embed.js"&gt;&lt;/script&gt;
+                </div>
+                <div id="auto-init-example" 
+                     data-apptega-navigator
+                     data-width="400"
+                     data-height="300"
+                     data-user-id="demo_user"
+                     data-organization-id="demo_org"
+                     style="border: 2px dashed #ccc; border-radius: 8px; margin: 20px 0;">
+                </div>
+            </div>
+
+            <div class="example">
+                <h2>Features Demonstrated</h2>
+                <ul>
+                    <li><strong>Step-by-step guidance:</strong> 6-step onboarding process</li>
+                    <li><strong>Progress tracking:</strong> Visual progress bar and step indicators</li>
+                    <li><strong>Contextual help:</strong> Tips and guidance based on current page</li>
+                    <li><strong>Quick actions:</strong> One-click access to common tasks</li>
+                    <li><strong>Responsive design:</strong> Optimized for 400px width</li>
+                    <li><strong>iframe communication:</strong> postMessage API for integration</li>
+                    <li><strong>Customizable:</strong> Multiple integration methods</li>
+                    <li><strong>Minimizable:</strong> Non-intrusive user experience</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Sidebar with Navigator Widget -->
+        <div class="sidebar">
+            <iframe src="http://localhost:3000/" title="Apptega Navigator"></iframe>
+        </div>
+    </div>
+
+    <!-- Load embed script for testing -->
+    <script src="embed.js"></script>
+    <script>
+        function testScriptIntegration() {
+            alert('Script integration would create a new navigator instance.\n\nIn a real implementation, this would:\n• Initialize the widget in a container\n• Set up message listeners\n• Handle navigation and tour events');
+        }
+
+        function showNavigator() {
+            if (window.AppregaNavigator) {
+                window.AppregaNavigator.show();
+            }
+        }
+
+        function hideNavigator() {
+            if (window.AppregaNavigator) {
+                window.AppregaNavigator.hide();
+            }
+        }
+
+        // Listen for navigator events
+        window.addEventListener('AppregaNavigator:navigatorAction', function(event) {
+            console.log('Navigator action:', event.detail);
+        });
+
+        window.addEventListener('AppregaNavigator:stepCompleted', function(event) {
+            console.log('Step completed:', event.detail);
+        });
+    </script>
+</body>
+</html>
