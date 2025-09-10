@@ -150,7 +150,7 @@ const NavigatorWidget: React.FC = () => {
         <div className="flex items-center space-x-1">
           <button
             onClick={() => {
-              const bedrockPanel = document.querySelector('[data-test="bedrock-test-panel"]');
+              const bedrockPanel = document.querySelector('[data-test="bedrock-test-panel"]') as HTMLElement;
               if (bedrockPanel) {
                 bedrockPanel.style.display = bedrockPanel.style.display === 'none' ? 'block' : 'none';
               }
