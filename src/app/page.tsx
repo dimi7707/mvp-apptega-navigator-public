@@ -16,7 +16,7 @@ export default function Home() {
         "Write a helpful tip for compliance onboarding"
       );
       setGeneratedText(text);
-    } catch (error) {
+    } catch (_) {
       setGeneratedText("Error generating text");
     } finally {
       setIsLoading(false);
@@ -33,7 +33,7 @@ export default function Home() {
     try {
       const text = await generateText(userInput);
       setGeneratedText(text);
-    } catch (error) {
+    } catch (_) {
       setGeneratedText("Error generating text");
     } finally {
       setIsLoading(false);

@@ -166,7 +166,9 @@ const NavigatorWidget: React.FC = () => {
           <button
             onClick={() => {
               // Prefer the embed destroy if present, otherwise fall back to minimizing
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               if (typeof window !== 'undefined' && (window as any).AppregaNavigator && typeof (window as any).AppregaNavigator.destroy === 'function') {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 (window as any).AppregaNavigator.destroy();
               } else {
                 setIsMinimized(true);
