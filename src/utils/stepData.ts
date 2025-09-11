@@ -8,6 +8,7 @@ export interface OnboardingStep {
     label: string;
     target?: string;
     action?: string;
+    badge?: string;
   }[];
   tips: string[];
   contextualHelp?: {
@@ -22,7 +23,7 @@ export const onboardingSteps: OnboardingStep[] = [
     description: 'Let\'s get you started with your first assessment',
     targetPage: 'dashboard',
     actions: [
-      { label: 'Start First Assessment', target: '/assessments/new' },
+      { label: 'Start First Assessment', action: 'start_first_assessment', badge: 'Live example' },
       { label: 'Tour the Platform', action: 'start_tour' }
     ],
     tips: [
@@ -139,24 +140,24 @@ export const getStepById = (id: string): OnboardingStep | undefined => {
 
 export const getNextStep = (currentStepId: string): OnboardingStep | undefined => {
   const currentIndex = onboardingSteps.findIndex(step => step.id === currentStepId);
-  return currentIndex >= 0 && currentIndex < onboardingSteps.length - 1 
-    ? onboardingSteps[currentIndex + 1] 
+  return currentIndex >= 0 && currentIndex < onboardingSteps.length - 1
+    ? onboardingSteps[currentIndex + 1]
     : undefined;
 };
 
 export const getPreviousStep = (currentStepId: string): OnboardingStep | undefined => {
   const currentIndex = onboardingSteps.findIndex(step => step.id === currentStepId);
-  return currentIndex > 0 
-    ? onboardingSteps[currentIndex - 1] 
+  return currentIndex > 0
+    ? onboardingSteps[currentIndex - 1]
     : undefined;
 };
 
 export const getContextualActions = (userContext: { currentPage?: string } | null) => {
   if (!userContext?.currentPage) return [];
-  
-  const currentStep = onboardingSteps.find(step => 
+
+  const currentStep = onboardingSteps.find(step =>
     step.targetPage === userContext.currentPage
   );
-  
+
   return currentStep?.actions || [];
 };

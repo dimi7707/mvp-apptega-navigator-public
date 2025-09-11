@@ -9,14 +9,14 @@ interface StepGuideProps {
   onAction: (action: string, target?: string) => void;
 }
 
-const StepGuide: React.FC<StepGuideProps> = ({ 
-  step, 
-  context, 
-  onComplete, 
-  onAction 
+const StepGuide: React.FC<StepGuideProps> = ({
+  step,
+  context,
+  onComplete,
+  onAction
 }) => {
   const [expandedActions, setExpandedActions] = useState<{ [key: number]: boolean }>({});
-  const contextualHelp = context?.currentPage ? 
+  const contextualHelp = context?.currentPage ?
     getContextualHelp(context.currentPage, step) : null;
 
   const handleAction = (action: { label: string; target?: string; action?: string }) => {
@@ -101,7 +101,7 @@ const StepGuide: React.FC<StepGuideProps> = ({
           const dummyContent = getDummyContent(action.label);
           const isExpanded = expandedActions[index];
           const hasExpandableContent = dummyContent !== null;
-          
+
           return (
             <div key={index} className="w-full">
               <button
@@ -114,12 +114,17 @@ const StepGuide: React.FC<StepGuideProps> = ({
               >
                 <div className="flex items-center justify-between">
                   <span className="font-medium">{action.label}</span>
+                  {action.badge && (
+                    <span className="text-xs text-white bg-green-500 px-2 py-1 rounded-full">
+                      {action.badge}
+                    </span>
+                  )}
                   <div className="flex items-center space-x-2">
                     {hasExpandableContent ? (
-                      <svg 
-                        className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-45' : ''}`} 
-                        fill="none" 
-                        stroke="currentColor" 
+                      <svg
+                        className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-45' : ''}`}
+                        fill="none"
+                        stroke="currentColor"
                         viewBox="0 0 24 24"
                       >
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -132,7 +137,7 @@ const StepGuide: React.FC<StepGuideProps> = ({
                   </div>
                 </div>
               </button>
-              
+
               {/* Collapsible content */}
               {hasExpandableContent && isExpanded && dummyContent && (
                 <div className="mt-2 p-4 bg-gray-50 rounded-lg border border-gray-200">

@@ -3,10 +3,10 @@ import ProgressTracker from './ProgressTracker';
 import StepGuide from './StepGuide';
 import QuickActions from './QuickActions';
 import { onboardingSteps, getNextStep, getContextualActions } from '@/utils/stepData';
-import { 
-  AppregaIntegration, 
-  UserContext, 
-  isStepAvailable 
+import {
+  AppregaIntegration,
+  UserContext,
+  isStepAvailable
 } from '@/utils/integrationHelpers';
 import {
   getCompletedSteps,
@@ -21,7 +21,7 @@ const NavigatorWidget: React.FC = () => {
   const [completedSteps, setCompletedSteps] = useState<string[]>([]);
   const [isMinimized, setIsMinimized] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
-  
+
   const integration = AppregaIntegration.getInstance();
   const currentStep = onboardingSteps[currentStepIndex];
 
@@ -69,10 +69,10 @@ const NavigatorWidget: React.FC = () => {
     // Update localStorage and state
     const updatedSteps = addCompletedStep(stepId);
     setCompletedSteps(updatedSteps);
-    
+
     // Notify parent application
     integration.completeStep(stepId);
-    
+
     // Move to next step if available
     const nextStep = getNextStep(stepId);
     if (nextStep) {
@@ -164,8 +164,16 @@ const NavigatorWidget: React.FC = () => {
             <span className="text-xs font-semibold">IA</span>
           </button>
           <button
-            onClick={() => setIsMinimized(true)}
+            onClick={() => {
+              // Prefer the embed destroy if present, otherwise fall back to minimizing
+              if (typeof window !== 'undefined' && (window as any).AppregaNavigator && typeof (window as any).AppregaNavigator.destroy === 'function') {
+                (window as any).AppregaNavigator.destroy();
+              } else {
+                setIsMinimized(true);
+              }
+            }}
             className="p-1 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+            data-test="close-button"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
@@ -175,8 +183,8 @@ const NavigatorWidget: React.FC = () => {
       </div>
 
       {/* Progress Tracker */}
-      <ProgressTracker 
-        current={currentStepIndex} 
+      <ProgressTracker
+        current={currentStepIndex}
         total={onboardingSteps.length}
         completedSteps={completedSteps}
       />
@@ -199,11 +207,11 @@ const NavigatorWidget: React.FC = () => {
           >
             ← Previous
           </button>
-          
+
           <span className="text-xs text-gray-500">
             {currentStepIndex + 1} / {onboardingSteps.length}
           </span>
-          
+
           <button
             onClick={handleNextStep}
             disabled={currentStepIndex === onboardingSteps.length - 1}

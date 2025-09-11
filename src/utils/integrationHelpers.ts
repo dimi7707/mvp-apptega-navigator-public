@@ -61,6 +61,7 @@ export class AppregaIntegration {
   }
 
   public sendMessage(message: NavigatorMessage) {
+    console.log("🚀 ~ AppregaIntegration ~ sendMessage ~ message:", message)
     if (typeof window !== 'undefined' && window.parent && window.parent !== window) {
       window.parent.postMessage(message, '*');
     }
