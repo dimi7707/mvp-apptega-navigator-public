@@ -136,7 +136,7 @@ const NavigatorWidget: React.FC = () => {
   }
 
   return (
-    <div className="navigator-widget w-full max-w-sm h-full max-h-screen bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden flex flex-col">
+    <div className="navigator-widget w-full max-w-sm h-full max-h-screen bg-transparent border border-gray-200 rounded-lg shadow-lg overflow-hidden flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between p-3 bg-gray-50 border-b border-gray-200">
         <div className="flex items-center">
